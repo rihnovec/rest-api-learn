@@ -3,7 +3,7 @@ const path = require('path')
 const {v4} = require('uuid')
 const app = express()
 
-const CONTACTS = [
+let CONTACTS = [
   {
     id: v4(),
     name: 'Антон',
@@ -22,6 +22,18 @@ app.post('/api/contacts', (request, response) => {
   const contact = {...request.body, id: v4(), marked: false}
   CONTACTS.push(contact)
   response.status(201).json(contact)
+})
+
+app.delete('/api/contacts/:id', (request, response) => {
+  CONTACTS = CONTACTS.filter(c => c.id !== request.params.id)
+  response.status(200).json({message: 'Контакт был удален'})
+})
+
+app.put('/api/contacts/:id', (request, response) => {
+  const idx = CONTACTS.findIndex(c => c.id === request.params.id)
+
+  CONTACTS[idx] = request.body
+  response.json(CONTACTS[idx])
 })
 
 app.use(express.static(path.resolve(__dirname, 'client')))
